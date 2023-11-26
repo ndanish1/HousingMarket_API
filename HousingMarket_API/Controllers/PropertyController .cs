@@ -25,7 +25,7 @@ namespace HousingMarket_API.Controllers
             return CreatedAtAction(nameof(GetProperties), new { id = propertyModel.Id }, propertyModel);
         }
 
-        // GET: api/properties
+        // GET: api/properties1
         [HttpGet]
         public IActionResult GetProperties()
         {
