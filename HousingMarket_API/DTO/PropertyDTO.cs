@@ -15,13 +15,13 @@ namespace HousingMarket_API.DTO
 
         public PropertyDTO(PropertyModel property)
         {
-            Type = property.Type;
-            Address = property.Address;
+            Type = property.PropertyType;
+            Address = property.PropertyAddress;
             Bedrooms = property.Bedrooms;
             Bathrooms = property.Bathrooms;
             SquareFootage = property.SquareFootage;
             Price = property.Price;
-            Description = property.Description;
+            Description = property.PropertyDescription;
         }
     }
 }

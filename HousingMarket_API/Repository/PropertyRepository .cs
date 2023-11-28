@@ -1,25 +1,32 @@
 ﻿using HousingMarket_API.DTO;
 using HousingMarket_API.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace HousingMarket_API.Repository
 {
     public class PropertyRepository : IPropertyRepository
     {
-        private readonly List<PropertyModel> properties;
-        public PropertyRepository() 
-        {
-            properties = new List<PropertyModel>();
-        }
+        private readonly HousingMarketAPIDbContext _context;
+        //private readonly List<PropertyModel> properties;
 
+        public PropertyRepository(HousingMarketAPIDbContext context)
+        {
+            _context = context;
+        }
         public void Add(PropertyModel property)
         {
-            property.Id = properties.Count + 1; 
-            properties.Add(property);
+            _context.Property.Add(property);
+            _context.SaveChanges();
         }
 
         public IEnumerable<PropertyModel> GetAll()
         {
-            return properties;
+            return  _context.Property;
+        }
+
+        public PropertyModel GetById(int id)
+        {
+            return _context.Property.FirstOrDefault(p => p.Id == id);
         }
     }
 }

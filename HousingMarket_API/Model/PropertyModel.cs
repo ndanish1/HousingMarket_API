@@ -5,23 +5,23 @@ namespace HousingMarket_API.Model
     public class PropertyModel
     {
         public int Id { get; set; }
-        public string? Type { get; set; }
-        public string? Address { get; set; }
+        public string? PropertyType { get; set; }
+        public string? PropertyAddress { get; set; }
         public int Bedrooms { get; set; }
         public int Bathrooms { get; set; }
-        public double SquareFootage { get; set; }
+        public int SquareFootage { get; set; }
         public decimal Price { get; set; }
-        public string? Description { get; set; }
+        public string? PropertyDescription { get; set; }
 
-        public PropertyModel(string type, string address, int bedrooms, int bathrooms, double squareFootage, decimal price, string description)
+        public PropertyModel(string propertyType, string propertyAddress, int bedrooms, int bathrooms, int squareFootage, decimal price, string propertyDescription)
         {
-            Type = type;
-            Address = address;
+            PropertyType = propertyType;
+            PropertyAddress = propertyAddress;
             Bedrooms = bedrooms;
             Bathrooms = bathrooms;
             SquareFootage = squareFootage;
             Price = price;
-            Description = description;
+            PropertyDescription = propertyDescription;
         }
 
         /*public void DisplayDetails()

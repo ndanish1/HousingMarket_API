@@ -7,8 +7,8 @@ namespace HousingMarket_API.Repository
     {
         void Add(PropertyModel property);
         IEnumerable<PropertyModel> GetAll();
-        /*PropertyModel GetById(int id);
-        void Update(PropertyModel housing);
+        PropertyModel GetById(int id);
+        /*void Update(PropertyModel housing);
         void Delete(int id);*/
     }
 }

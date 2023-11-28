@@ -33,15 +33,29 @@ namespace HousingMarket_API.Controllers
             return Ok(allProperties);
         }
 
-        /*[HttpGet("{id}")]
+       /* [HttpGet("{id}")]
         public ActionResult<PropertyDTO> GetById(int id)
         {
-            // Implement logic to get housing data by id from the repository
-        }
+            var property = propertyRepository.GetById(id);
+            //I am here 
+            if (property == null)
+            {
+                return NotFound(); // 404 Not Found
+            }
+
+            // Map PropertyModel to PropertyDTO (you may use AutoMapper or manual mapping)
+            var propertyDTO = new PropertyDTO(property);
+            {
+                Id = property.Id,
+                // Map other properties...
+            };
+
+            return propertyDTO;
+        }*/
 
 
 
-        [HttpPut("{id}")]
+        /*[HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] PropertyDTO housing)
         {
             // Implement logic to update housing data in the repository

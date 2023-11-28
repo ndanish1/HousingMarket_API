@@ -1,10 +1,18 @@
+using HousingMarket_API;
 using HousingMarket_API.Repository;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 
+
+builder.Services.AddDbContext<HousingMarketAPIDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -26,3 +34,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
