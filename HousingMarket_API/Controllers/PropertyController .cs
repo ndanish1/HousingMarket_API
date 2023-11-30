@@ -1,7 +1,10 @@
-﻿using HousingMarket_API.DTO;
+﻿using Azure;
+using HousingMarket_API.DTO;
 using HousingMarket_API.Model;
 using HousingMarket_API.Repository;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace HousingMarket_API.Controllers
 {
@@ -16,61 +19,93 @@ namespace HousingMarket_API.Controllers
             propertyRepository = repository;
         }
 
-        // POST: api/controller
         [HttpPost]
-        public IActionResult CreateProperty([FromBody] PropertyModel propertyModel)
+        public async Task<IActionResult> CreateProperty([FromBody] PropertyModel propertyModel)
         {
-            propertyRepository.Add(propertyModel);
+            await propertyRepository.AddAsync(propertyModel);
 
             return CreatedAtAction(nameof(GetProperties), new { id = propertyModel.Id }, propertyModel);
         }
 
-        // GET: api/properties1
         [HttpGet]
-        public IActionResult GetProperties()
+        public async Task<ActionResult<IEnumerable<PropertyModel>>> GetProperties()
         {
-            var allProperties = propertyRepository.GetAll();
-            return Ok(allProperties);
-        }
+            var properties = await propertyRepository.GetAllAsync();
 
-       /* [HttpGet("{id}")]
-        public ActionResult<PropertyDTO> GetById(int id)
-        {
-            var property = propertyRepository.GetById(id);
-            //I am here 
-            if (property == null)
+            if (properties == null)
             {
-                return NotFound(); // 404 Not Found
+                return NotFound();
             }
 
-            // Map PropertyModel to PropertyDTO (you may use AutoMapper or manual mapping)
-            var propertyDTO = new PropertyDTO(property);
-            {
-                Id = property.Id,
-                // Map other properties...
-            };
-
-            return propertyDTO;
-        }*/
-
-
-
-        /*[HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] PropertyDTO housing)
-        {
-            // Implement logic to update housing data in the repository
+            return Ok(properties);
         }
 
-        [HttpPatch("{id}")]
-        public IActionResult Patch(int id, [FromBody] JsonPatchDocument<PropertyDTO> patchDoc)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PropertyDTO>> GetById(int id)
         {
-            // Implement logic to apply partial updates to housing data in the repository
+            var property = await propertyRepository.GetByIdAsync(id);
+
+            if (property == null)
+            {
+                return NotFound();
+            }
+
+            var propertyDTO = new PropertyDTO
+            {
+                Id = property.Id,
+                PropertyType = property.PropertyType,
+                PropertyAddress = property.PropertyAddress,
+                Bedrooms = property.Bedrooms,
+                Bathrooms = property.Bathrooms,
+                SquareFootage = property.SquareFootage,
+                Price = property.Price,
+                PropertyDescription = property.PropertyDescription
+        };
+
+            return Ok(propertyDTO);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProperty(int id, [FromBody] PropertyModel updatedProperty)
+        {
+            if (id != updatedProperty.Id)
+            {
+                return BadRequest("The provided ID does not match the property ID.");
+            }
+
+            await propertyRepository.UpdateAsync(updatedProperty);
+
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteProperty(int id)
         {
-            // Implement logic to delete housing data from the repository
-        }*/
+            await propertyRepository.DeleteAsync(id);
+
+            return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchProperty(int id, [FromBody] JsonPatchDocument<PropertyModel> patchDocument)
+        {
+            var propertyToUpdate = await propertyRepository.GetByIdAsync(id);
+
+            if (propertyToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            patchDocument.ApplyTo(propertyToUpdate, ModelState);
+
+            if (!TryValidateModel(propertyToUpdate))
+            {
+                return BadRequest(ModelState);
+            }
+
+            await propertyRepository.UpdateAsync(propertyToUpdate);
+
+            return NoContent();
+        }
     }
 }

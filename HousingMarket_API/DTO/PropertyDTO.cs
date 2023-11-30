@@ -5,23 +5,24 @@ namespace HousingMarket_API.DTO
     public class PropertyDTO
     {
         public int Id { get; set; }
-        public string? Type { get; set; }
-        public string? Address { get; set; }
+        public string? PropertyType { get; set; }
+        public string? PropertyAddress { get; set; }
         public int Bedrooms { get; set; }
         public int Bathrooms { get; set; }
-        public double SquareFootage { get; set; }
+        public int SquareFootage { get; set; }
         public decimal Price { get; set; }
-        public string? Description { get; set; }
+        public string? PropertyDescription { get; set; }
 
+        public PropertyDTO() { }
         public PropertyDTO(PropertyModel property)
         {
-            Type = property.PropertyType;
-            Address = property.PropertyAddress;
+            PropertyType = property.PropertyType;
+            PropertyAddress = property.PropertyAddress;
             Bedrooms = property.Bedrooms;
             Bathrooms = property.Bathrooms;
             SquareFootage = property.SquareFootage;
             Price = property.Price;
-            Description = property.PropertyDescription;
+            PropertyDescription = property.PropertyDescription;
         }
     }
 }

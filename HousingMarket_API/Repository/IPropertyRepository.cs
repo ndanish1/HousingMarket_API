@@ -5,10 +5,12 @@ namespace HousingMarket_API.Repository
 {
     public interface IPropertyRepository
     {
-        void Add(PropertyModel property);
-        IEnumerable<PropertyModel> GetAll();
-        PropertyModel GetById(int id);
-        /*void Update(PropertyModel housing);
-        void Delete(int id);*/
+        Task AddAsync(PropertyModel property);
+        Task<IEnumerable<PropertyModel>> GetAllAsync();
+        Task<PropertyModel> GetByIdAsync(int id);
+        Task UpdateAsync(PropertyModel property);
+        Task DeleteAsync(int id);
+        Task PatchAsync(int id);
+
     }
 }
