@@ -60,7 +60,7 @@ namespace HousingMarket_API.Controllers
                 SquareFootage = property.SquareFootage,
                 Price = property.Price,
                 PropertyDescription = property.PropertyDescription
-        };
+            };
 
             return Ok(propertyDTO);
         }

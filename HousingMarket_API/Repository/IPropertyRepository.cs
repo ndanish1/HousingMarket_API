@@ -1,5 +1,4 @@
-﻿using HousingMarket_API.DTO;
-using HousingMarket_API.Model;
+﻿using HousingMarket_API.Model;
 
 namespace HousingMarket_API.Repository
 {

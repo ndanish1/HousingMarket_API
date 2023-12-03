@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace HousingMarket_API.Model
+﻿namespace HousingMarket_API.Model
 {
     public class PropertyModel
     {
