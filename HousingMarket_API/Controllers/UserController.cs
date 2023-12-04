@@ -1,14 +1,12 @@
 ﻿using HousingMarket_API.Repository;
 using HousingMarket_API.Model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using HousingMarket_API.DTO;
-using Microsoft.AspNetCore.JsonPatch;
 
 namespace HousingMarket_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class UserController : Controller
     {
         private readonly IUserRepository userRepository;
@@ -18,91 +16,75 @@ namespace HousingMarket_API.Controllers
             userRepository = repository;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserModel userModel)
-        {
-            await userRepository.AddAsync(userModel);
-
-            return CreatedAtAction(nameof(Getusers), new { id = userModel.Id }, userModel);
-        }
-
+        // GET: api/properties1
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserModel>>> Getusers()
+        public IActionResult GetUser()
         {
-            var users = await userRepository.GetAllAsync();
-
-            if (users == null)
-            {
-                return NotFound();
-            }
-            return Ok(users);
+            var allProperties = userRepository.GetAll();
+            return Ok(allProperties);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PropertyDTO>> GetById(int id)
+
+        // POST
+        [HttpPost]
+        public IActionResult CreateUser([FromBody] UserModel userModel)
         {
-            var user = await userRepository.GetByIdAsync(id);
+            userRepository.Add(userModel);
 
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var userDTO = new UserDTO
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                UserName= user.UserName,
-                Password= user.Password,
-                UserRole= user.UserRole
-            };
-
-            return Ok(userDTO);
+            return CreatedAtAction(nameof(GetUser), new { id = userModel.userId }, userModel);
         }
 
+        [HttpPost("authenticate")]
+        public IActionResult AuthenticateLogin(string username, string password)
+        {
+            var authenticatedUser = userRepository.Authenticate(username, password);
+
+            if (authenticatedUser == null)
+            { 
+                return Unauthorized();
+            }
+
+            return Ok(new { Message = "Authentication successful", User = authenticatedUser });
+        }
+
+        /////////////////////////////////////////////
+        
+        // PUT: api/user/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserModel updatedUser)
+        public IActionResult UpdateUser(int id, [FromBody] UserModel updatedUser)
         {
-            if (id != updatedUser.Id)
+            var existingUser = userRepository.GetById(id);
+
+            if (existingUser == null)
             {
-                return BadRequest("The provided ID does not match the property ID.");
+                return NotFound(); // 404 Not Found
             }
 
-            await userRepository.UpdateAsync(updatedUser);
+            // Update user properties
+            existingUser.firstName = updatedUser.firstName;
+            existingUser.lastName = updatedUser.lastName;
+            existingUser.userName = updatedUser.userName;
+            existingUser.email = updatedUser.email;
+            existingUser.password = updatedUser.password;
+            existingUser.userRole = updatedUser.userRole;
 
-            return NoContent();
+            userRepository.Update(existingUser); 
+            return Ok(existingUser);
         }
 
+        // DELETE: api/user/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public IActionResult DeleteUser(int id)
         {
-            await userRepository.DeleteAsync(id);
+            var userToDelete = userRepository.GetById(id);
 
-            return NoContent();
-        }
-
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> PatchUser(int id, [FromBody] JsonPatchDocument<UserModel> patchDocument)
-        {
-            var propertyToUpdate = await userRepository.GetByIdAsync(id);
-
-            if (propertyToUpdate == null)
+            if (userToDelete == null)
             {
-                return NotFound();
+                return NotFound(); // 404 Not Found
             }
 
-            patchDocument.ApplyTo(propertyToUpdate, ModelState);
-
-            if (!TryValidateModel(propertyToUpdate))
-            {
-                return BadRequest(ModelState);
-            }
-
-            await userRepository.UpdateAsync(propertyToUpdate);
-
-            return NoContent();
+            userRepository.Delete(id); 
+            return NoContent(); // 204 No Content
         }
     }
 
