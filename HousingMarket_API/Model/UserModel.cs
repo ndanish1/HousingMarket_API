@@ -2,22 +2,28 @@
 {
     public class UserModel
     {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string UserName{ get; set; }
-        public string Password { get; set; }
-        public string UserRole { get; set; }
-        public UserModel(int id, string firstName, string lastName, string userName, string email, string password, string userRole)
+        public int userId { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
+        public string email { get; set; }
+
+        public string userName{ get; set; }
+        public string password { get; set; }
+        public string userRole { get; set; }
+
+
+        public UserModel(int userId, string firstName, string lastName, string userName, string email, string password, string userRole)
         {
-            Id = id;
-            FirstName = firstName;
-            LastName = lastName;
-            UserName = userName;
-            Email = email;
-            Password = password;
-            UserRole = userRole;
+            this.userId = userId;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.userName = userName;
+            this.email = email;
+            this.password = password;
+            this.userRole = userRole;
+            
         }
+
+
     }
 }
