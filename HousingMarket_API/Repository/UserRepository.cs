@@ -1,53 +1,73 @@
 ﻿using HousingMarket_API.Model;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HousingMarket_API.Repository
 {
     public class UserRepository : IUserRepository
     {
         private readonly HousingMarketAPIDbContext _context;
+
         public UserRepository(HousingMarketAPIDbContext context)
         {
             _context = context;
         }
-        public async Task AddAsync(UserModel user)
-        {
-            await _context.User.AddAsync(user);
-            await _context.SaveChangesAsync();
-        }
-        public async Task<IEnumerable<UserModel>> GetAllAsync()
-        {
-            return await _context.User.ToListAsync();
-        }
-        public async Task<UserModel> GetByIdAsync(int id)
-        {
-            return await _context.User.FindAsync(id);
-        }
-        public async Task UpdateAsync(UserModel user)
-        {
-            _context.User.Update(user);
-            await _context.SaveChangesAsync();
-        }
-        public async Task DeleteAsync(int id)
-        {
-            var userToDelete = await _context.User.FindAsync(id);
 
-            if (userToDelete != null)
+        public void Add(UserModel user)
+        {
+            _context.User.Add(user);
+            _context.SaveChanges();
+        }
+
+        public IEnumerable<UserModel> GetAll()
+        {
+            return _context.User.ToList();
+        }
+
+        public UserModel GetById(int id)
+        {
+            return _context.User.FirstOrDefault(u => u.userId == id);
+        }
+
+        public void Update(UserModel user)
+        {
+            var existingUser = _context.User.FirstOrDefault(u => u.userId == user.userId);
+            if (existingUser != null)
             {
-                _context.User.Remove(userToDelete);
-                await _context.SaveChangesAsync();
+                existingUser.firstName = user.firstName;
+                existingUser.lastName = user.lastName;
+                existingUser.userName = user.userName;
+                existingUser.email = user.email;
+                existingUser.password = user.password;
+                existingUser.userRole = user.userRole;
+
+                _context.SaveChanges();
+            }
+            else
+            {
+                
+                throw new InvalidOperationException("The specified user does not exist.");
             }
         }
 
-        public async Task PatchAsync(int id)
+        public UserModel Authenticate(string username, string password)
         {
-            var userToPatch = await _context.User.FindAsync(id);
+            return _context.User.FirstOrDefault(u => u.userName == username && u.password == password);
+        }
 
-            if (userToPatch != null)
+        public void Delete(int id)
+        {
+            var user = _context.User.FirstOrDefault(u => u.userId == id);
+            if (user != null)
             {
-                // Implement logic for patching (modify the entity as needed).
+                _context.User.Remove(user);
+                _context.SaveChanges();
+            }
+            else
+            {
 
-                await _context.SaveChangesAsync();
+                throw new InvalidOperationException("The specified user does not exist.");
             }
         }
     }

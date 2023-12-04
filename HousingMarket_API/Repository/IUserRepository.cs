@@ -1,14 +1,15 @@
 ﻿using HousingMarket_API.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HousingMarket_API.Repository
 {
     public interface IUserRepository
     {
-        Task AddAsync(UserModel user);
-        Task<IEnumerable<UserModel>> GetAllAsync();
-        Task<UserModel> GetByIdAsync(int id);
-        Task UpdateAsync(UserModel user);
-        Task DeleteAsync(int id);
-        Task PatchAsync(int id);
+        void Add(UserModel user);
+        IEnumerable<UserModel> GetAll();
+        UserModel GetById(int userId);
+        void Update(UserModel user);
+        void Delete(int userId);
+        UserModel Authenticate(string username, string password);
     }
 }
