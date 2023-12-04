@@ -1,73 +1,53 @@
 ﻿using HousingMarket_API.Model;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace HousingMarket_API.Repository
 {
     public class UserRepository : IUserRepository
     {
         private readonly HousingMarketAPIDbContext _context;
-
         public UserRepository(HousingMarketAPIDbContext context)
         {
             _context = context;
         }
-
-        public void Add(UserModel user)
+        public async Task AddAsync(UserModel user)
         {
-            _context.User.Add(user);
-            _context.SaveChanges();
+            await _context.User.AddAsync(user);
+            await _context.SaveChangesAsync();
         }
-
-        public IEnumerable<UserModel> GetAll()
+        public async Task<IEnumerable<UserModel>> GetAllAsync()
         {
-            return _context.User.ToList();
+            return await _context.User.ToListAsync();
         }
-
-        public UserModel GetById(int id)
+        public async Task<UserModel> GetByIdAsync(int id)
         {
-            return _context.User.FirstOrDefault(u => u.userId == id);
+            return await _context.User.FindAsync(id);
         }
-
-        public void Update(UserModel user)
+        public async Task UpdateAsync(UserModel user)
         {
-            var existingUser = _context.User.FirstOrDefault(u => u.userId == user.userId);
-            if (existingUser != null)
+            _context.User.Update(user);
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteAsync(int id)
+        {
+            var userToDelete = await _context.User.FindAsync(id);
+
+            if (userToDelete != null)
             {
-                existingUser.firstName = user.firstName;
-                existingUser.lastName = user.lastName;
-                existingUser.userName = user.userName;
-                existingUser.email = user.email;
-                existingUser.password = user.password;
-                existingUser.userRole = user.userRole;
-
-                _context.SaveChanges();
-            }
-            else
-            {
-                
-                throw new InvalidOperationException("The specified user does not exist.");
+                _context.User.Remove(userToDelete);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public UserModel Authenticate(string username, string password)
+        public async Task PatchAsync(int id)
         {
-            return _context.User.FirstOrDefault(u => u.userName == username && u.password == password);
-        }
+            var userToPatch = await _context.User.FindAsync(id);
 
-        public void Delete(int id)
-        {
-            var user = _context.User.FirstOrDefault(u => u.userId == id);
-            if (user != null)
+            if (userToPatch != null)
             {
-                _context.User.Remove(user);
-                _context.SaveChanges();
-            }
-            else
-            {
+                // Implement logic for patching (modify the entity as needed).
 
-                throw new InvalidOperationException("The specified user does not exist.");
+                await _context.SaveChangesAsync();
             }
         }
     }
